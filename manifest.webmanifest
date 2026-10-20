@@ -1,0 +1,19 @@
+{
+  "name": "FixkostenWächter",
+  "short_name": "Fixkosten",
+  "description": "Wiederkehrende Ausgaben einfach im Blick behalten.",
+  "lang": "de-DE",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f7fa",
+  "theme_color": "#142b4a",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
