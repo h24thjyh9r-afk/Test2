@@ -43,6 +43,38 @@ function safeText(value) {
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
   })[char]);
 }
+function parseDay(value) {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  const d = new Date(value + "T12:00:00");
+  return !Number.isNaN(d.getTime()) && d.getFullYear() === Number(value.slice(0,4)) && d.getMonth()+1 === Number(value.slice(5,7)) && d.getDate() === Number(value.slice(8,10)) ? d : null;
+}
+function daysBetween(a,b) {
+  return Math.round((Date.UTC(b.getFullYear(),b.getMonth(),b.getDate()) - Date.UTC(a.getFullYear(),a.getMonth(),a.getDate()))/86400000);
+}
+function shiftDays(d,n) {
+  const copy = new Date(d); copy.setDate(copy.getDate()+n); return copy;
+}
+function deadlineData(item) {
+  const end = parseDay(item.contractEnd);
+  if (!end) return null;
+  const notice = Number(item.noticeDays ?? 30);
+  const reminder = Number(item.reminderDays ?? 14);
+  if (!Number.isInteger(notice) || notice < 0 || notice > 3650 || !Number.isInteger(reminder) || reminder < 0 || reminder > 3650) return null;
+  const deadline = shiftDays(end,-notice);
+  const today = new Date();
+  return { end, deadline, remaining: daysBetween(today,deadline), reminder, note: item.contractNote || "" };
+}
+function renderDeadlines() {
+  const records = expenses.filter(x => x.active).map(item => ({item, data: deadlineData(item)})).filter(x => x.data).sort((a,b) => a.data.deadline-b.data.deadline);
+  const due = records.filter(x => x.data.remaining >= 0 && x.data.remaining <= x.data.reminder);
+  const overdue = records.filter(x => x.data.remaining < 0);
+  $("deadline-summary").textContent = `${records.length} Verträge mit Enddatum · ${due.length} im Erinnerungsfenster · ${overdue.length} mit abgelaufener Kündigungsfrist`;
+  $("deadline-list").innerHTML = records.length ? records.map(({item,data}) => {
+    const status = data.remaining < 0 ? `Frist seit ${-data.remaining} Tagen abgelaufen` : data.remaining === 0 ? "Kündigungsfrist endet heute" : data.remaining <= data.reminder ? `Erinnerung: noch ${data.remaining} Tage` : `Noch ${data.remaining} Tage`;
+    const level = data.remaining < 0 ? "expired" : data.remaining <= data.reminder ? "urgent" : "normal";
+    return `<article class="deadline-item ${level}"><div><strong>${safeText(item.name)}</strong><div class="deadline-meta">Vertragsende: ${dateFmt.format(data.end)} · Kündigen bis: ${dateFmt.format(data.deadline)}</div>${data.note ? `<div class="deadline-meta">Notiz: ${safeText(data.note)}</div>` : ""}</div><span class="deadline-status">${status}</span></article>`;
+  }).join("") : '<p class="analysis-copy">Noch keine aktiven Verträge mit Enddatum. Ergänze die Vertragsdaten über „Bearbeiten“.</p>';
+}
 function render() {
   const active = expenses.filter(item => item.active);
   const monthly = active.reduce((sum, item) => sum + monthlyAmount(item), 0);
@@ -60,11 +92,12 @@ function render() {
   const list = $("expense-list");
   list.innerHTML = filtered.map(item => {
     const nextDate = item.date ? dateFmt.format(new Date(`${item.date}T12:00:00`)) : "Kein Datum";
+    const deadline = deadlineData(item);
     return `<article class="expense-item ${item.active ? "" : "inactive"}">
       <div class="category-icon" aria-hidden="true">${categorySymbol(item.category)}</div>
       <div class="expense-main">
         <h3>${safeText(item.name)}</h3>
-        <div class="expense-meta">${safeText(item.category)} · ${safeText(cycleLabel(item.cycle))}<br>${item.active ? "Nächste Zahlung: " + safeText(nextDate) : "Pausiert"}</div>
+        <div class="expense-meta">${safeText(item.category)} · ${safeText(cycleLabel(item.cycle))}<br>${item.active ? "Nächste Zahlung: " + safeText(nextDate) : "Pausiert"}${deadline ? `<br>Vertragsende: ${dateFmt.format(deadline.end)} · Kündigen bis: ${dateFmt.format(deadline.deadline)}` : ""}</div>
       </div>
       <div class="expense-price">
         <strong>${money.format(Number(item.amount))}</strong>
@@ -79,6 +112,7 @@ function render() {
   }).join("");
 
   renderAnalysis(active, monthly);
+  renderDeadlines();
   if (active.length === 0) {
     $("insight-text").textContent = "Aktiviere oder füge Fixkosten hinzu, um deine laufenden Ausgaben und mögliche Einsparungen zu vergleichen.";
   } else {
@@ -135,6 +169,10 @@ function openForm(item = null) {
   $("expense-cycle").value = item?.cycle || "monthly";
   $("expense-category").value = item?.category || "Streaming";
   $("expense-date").value = item?.date || defaultDate();
+  $("contract-end").value = item?.contractEnd || "";
+  $("notice-days").value = item?.noticeDays ?? 30;
+  $("reminder-days").value = item?.reminderDays ?? 14;
+  $("contract-note").value = item?.contractNote || "";
   $("expense-active").checked = item ? Boolean(item.active) : true;
   $("expense-dialog").showModal();
   setTimeout(() => $("expense-name").focus(), 50);
@@ -155,12 +193,20 @@ $("expense-form").addEventListener("submit", (event) => {
     $("form-error").textContent = "Bitte prüfe Name, Betrag und nächste Zahlung.";
     return;
   }
+  const contractEnd = $("contract-end").value;
+  const noticeDays = Number($("notice-days").value);
+  const reminderDays = Number($("reminder-days").value);
+  if ((contractEnd && !parseDay(contractEnd)) || !Number.isInteger(noticeDays) || noticeDays < 0 || noticeDays > 3650 || !Number.isInteger(reminderDays) || reminderDays < 0 || reminderDays > 3650) {
+    $("form-error").textContent = "Bitte prüfe Vertragsende, Kündigungsfrist und Erinnerungstage.";
+    return;
+  }
   const id = $("expense-id").value || (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()));
   const item = {
     id, name, amount: Math.round(amount * 100) / 100,
     cycle: $("expense-cycle").value,
     category: $("expense-category").value,
-    date, active: $("expense-active").checked
+    date, active: $("expense-active").checked,
+    contractEnd, noticeDays, reminderDays, contractNote: $("contract-note").value.trim()
   };
   const index = expenses.findIndex(expense => expense.id === id);
   if (index >= 0) expenses[index] = item;
@@ -196,6 +242,23 @@ $("export-button").addEventListener("click", () => {
   a.click();
   URL.revokeObjectURL(url);
   showToast("Export wurde erstellt.");
+});
+$("import-button").addEventListener("click", () => $("import-file").click());
+$("import-file").addEventListener("change", async (event) => {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  try {
+    if (file.size > 5_000_000) throw new Error("Die Datei ist zu groß (maximal 5 MB).");
+    const data = JSON.parse(await file.text());
+    if (!Array.isArray(data) || data.length > 10000 || !data.every(validExpense)) throw new Error("Die JSON-Datei enthält keine gültige Fixkostenliste.");
+    if (new Set(data.map(x=>x.id)).size !== data.length) throw new Error("Die Datei enthält doppelte IDs.");
+    if (!confirm(`Importiert werden ${data.length} Einträge. Alle aktuellen Einträge auf diesem Gerät werden ersetzt. Fortfahren?`)) return;
+    expenses = data;
+    selectedSavings.clear();
+    save();
+    showToast("Daten erfolgreich importiert.");
+  } catch(err) { alert(`Import fehlgeschlagen: ${err.message}`); }
+  finally { event.target.value = ""; }
 });
 $("reset-button").addEventListener("click", () => {
   if (!expenses.length) { showToast("Es sind keine Daten gespeichert."); return; }

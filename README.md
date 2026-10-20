@@ -1,35 +1,45 @@
-# FixkostenWächter – Version 2
+# FixkostenWächter – Version 3
 
-Eine deutschsprachige Progressive Web App (PWA) ohne Backend, Abo oder laufende Betriebskosten. Alle Einträge liegen lokal im jeweiligen Browser (localStorage).
+Kostenlose, deutschsprachige Progressive Web App (PWA) ohne Backend, Werbung oder laufende Servergebühren.
 
-## Neu in Version 2
-- Monats- und Jahresauswertung sowie die fünf größten aktiven Kostenpositionen.
-- Balkenauswertung nach Kategorien (Monatswerte und Prozentanteile).
-- Sparsimulator: Ausgaben auswählen, mögliche Monats- und Jahresersparnis berechnen, ohne Daten zu verändern.
-- Volltextsuche nach Name und Kategorie sowie Kategorie-Filter.
-- Alle Funktionen aus Version 1: Anlegen, Bearbeiten, Pausieren, Löschen, JSON-Export und Offline-Nutzung nach erfolgreichem Laden.
+## Neu in Version 3
 
-## Installation auf Windows (kostenlos)
-1. ZIP entpacken.
-2. Im entpackten Ordner `FixkostenWaechter_V2` ein Terminal öffnen.
-3. Python 3 vorausgesetzt: `py -m http.server 8000` ausführen (alternativ `python -m http.server 8000`).
-4. Im Browser `http://localhost:8000` öffnen.
-5. Mit Strg+C den lokalen Testserver beenden.
+- Vertragsende, Kündigungsfrist in Kalendertagen und frei wählbarer Erinnerungsvorlauf pro Ausgabe.
+- Übersicht der anstehenden und bereits überschrittenen Kündigungsfristen.
+- Hinweise innerhalb der App beim Öffnen; keine Hintergrund-Push-Nachrichten und keine E-Mails.
+- Vertragsnotiz, z. B. Kündigungsweg.
+- JSON-Import zusätzlich zum bisherigen Export.
+- Alle Funktionen von Version 2: Ausgabenverwaltung, Sparsimulation, Kategorien, Suche und Filter.
 
-## Installation auf dem iPhone
-1. Dateien aus `FixkostenWaechter_V2` in ein **öffentliches** GitHub-Repository hochladen (die Dateien müssen im Repository-Stamm liegen).
-2. Unter **Settings → Pages** die Bereitstellung über **Deploy from a branch**, Branch `main`, Ordner `/ (root)` aktivieren.
-3. Die von GitHub Pages angezeigte HTTPS-Adresse in Safari auf dem iPhone öffnen.
-4. In Safari **Teilen → Zum Home-Bildschirm** wählen.
-5. Einmal online öffnen; anschließend sind die gecachten App-Dateien offline nutzbar.
+## Wichtig zur Fristberechnung
 
-GitHub Pages kann für ein öffentliches Repository kostenlos verwendet werden (abhängig von den jeweils geltenden GitHub-Bedingungen). Die Quelldateien sind dort öffentlich, **deine persönlichen Ausgaben werden nicht hochgeladen**, sondern lokal im Browser gespeichert. Kein automatischer Abgleich zwischen Windows und iPhone.
+Die App berechnet **Kündigen bis = Vertragsende minus Kündigungsfrist (Kalendertage)**. Das Erinnerungsfenster beginnt entsprechend viele Tage vor dieser Frist. Vertragliche Sonderregelungen, Werktage, automatische Verlängerungen, Zugangserfordernisse und gesetzliche Vorgaben werden **nicht** automatisch berücksichtigt. Die Frist ist eine Orientierung und muss anhand des Vertrags geprüft werden. Bei abgelaufenen Fristen wird **keine neue Vertragslaufzeit erfunden**.
 
-## Update von Version 1
-- **Vor dem Update** in Version 1 die Daten über „Daten exportieren“ sichern.
-- Für den Erhalt vorhandener Daten Version 2 unter **derselben URL und im selben Browserprofil** bereitstellen. Version 2 nutzt absichtlich denselben lokalen Speicherschlüssel `fixkostenwaechter.v1`.
-- Bei anderer Domain, anderem Browser oder anderem Gerät sind die Daten nicht automatisch vorhanden. Ein Import ist in Version 2 noch nicht enthalten; der JSON-Export dient als Sicherung.
-- Nach einem Update die Seite bei Bedarf neu laden, damit der Service Worker den neuen Cache aktiviert.
+## Windows – lokaler Start
 
-## Hinweise
-Die Monatswerte werden für wöchentliche Ausgaben mit `52/12`, für Quartalsbeträge mit `1/3` und für Jahresbeträge mit `1/12` berechnet. Die Jahreskosten sind hochgerechnete Monatswerte, keine Prognose einzelner Abbuchungstage. Der Sparsimulator ist rein hypothetisch und kündigt keine Verträge. Die App enthält keine Bankanbindung, keine Nutzerkonten und keine kostenpflichtigen Dienste.
+1. ZIP-Datei entpacken und in `FixkostenWaechter_V3` wechseln.
+2. Python 3 installieren, falls nicht vorhanden.
+3. In diesem Ordner PowerShell öffnen und `py -m http.server 8000` ausführen.
+4. `http://localhost:8000` im Browser öffnen.
+5. Server beenden: `Strg+C`.
+
+## Update von Version 2
+
+1. **Vor dem Update:** In Version 2 über „Daten exportieren“ eine JSON-Sicherung herunterladen.
+2. Dateien der Version 3 **an derselben Webadresse** wie Version 2 bereitstellen (gleicher Ursprung: Protokoll, Domain und Port).
+3. Die App neu laden; bei alter Darstellung Browserseite erneut laden oder Website-Daten-Cache aktualisieren.
+4. Version 3 verwendet unverändert den bisherigen `localStorage`-Schlüssel `fixkostenwaechter.v1`. Bei identischer Adresse und Browser bleiben die bisherigen Einträge erhalten; neue Vertragsfelder sind zunächst leer.
+5. Bei anderer Webadresse oder auf einem anderen Gerät „Daten importieren“ verwenden. **Import ersetzt alle vorhandenen Einträge** auf dem Zielgerät.
+
+## iPhone – Installation als App
+
+1. Die Projektdateien z. B. in einem **öffentlichen** GitHub-Repository kostenlos über GitHub Pages bereitstellen (`Settings → Pages → Deploy from a branch`).
+2. HTTPS-Adresse auf dem iPhone in Safari öffnen.
+3. Safari → Teilen → Zum Home-Bildschirm.
+4. Auf dem iPhone bei Bedarf den zuvor exportierten JSON-Datensatz importieren.
+
+**Datenschutz:** Kosten- und Vertragsdaten liegen im lokalen Browserspeicher und werden nicht an GitHub gesendet. GitHub Pages stellt nur die öffentlichen App-Dateien bereit. Browserdaten können durch das Löschen von Website-Daten verloren gehen; regelmäßig exportieren. Es findet keine Synchronisierung statt.
+
+**Offline:** Nach dem ersten erfolgreichen Laden über localhost oder HTTPS werden App-Dateien für die Offline-Nutzung zwischengespeichert. Benachrichtigungen erscheinen nur, wenn die App geöffnet wird.
+
+**Kosten:** Lokaler Betrieb und öffentliches GitHub Pages benötigen keine laufenden Servergebühren. Für eine private, nichtöffentliche Veröffentlichung können andere Hostingbedingungen gelten.

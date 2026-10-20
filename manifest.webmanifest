@@ -1,7 +1,7 @@
 {
   "name": "FixkostenWächter",
   "short_name": "Fixkosten",
-  "description": "Wiederkehrende Ausgaben einfach im Blick behalten.",
+  "description": "Fixkosten, Vertragsenden und Kündigungsfristen im Blick behalten.",
   "lang": "de-DE",
   "start_url": "./",
   "scope": "./",

@@ -42,7 +42,7 @@
 
 
     <section class="analysis-section" aria-labelledby="analysis-title">
-      <div class="section-heading"><div><p class="eyebrow">VERSION 2 · AUSWERTUNG</p><h2 id="analysis-title">Deine Kostenanalyse</h2></div></div>
+      <div class="section-heading"><div><p class="eyebrow">VERSION 3 · AUSWERTUNG</p><h2 id="analysis-title">Deine Kostenanalyse</h2></div></div>
       <div class="analysis-grid">
         <article class="analysis-panel"><h3>Auf einen Blick</h3><p id="analysis-overview" class="analysis-copy">Noch keine aktiven Fixkosten.</p><div id="top-expenses"></div></article>
         <article class="analysis-panel"><h3>Kosten nach Kategorien</h3><p class="analysis-copy">Monatliche Vergleichswerte aktiver Ausgaben</p><div id="category-chart" class="category-chart"></div></article>
@@ -51,6 +51,15 @@
         <div id="savings-options" class="savings-options"></div>
         <div class="savings-totals"><div><span>Potenzial pro Monat</span><strong id="savings-monthly">0,00 €</strong></div><div><span>Potenzial pro Jahr</span><strong id="savings-yearly">0,00 €</strong></div></div>
         <button id="clear-simulation" class="button button-secondary" type="button">Auswahl zurücksetzen</button>
+      </article>
+    </section>
+
+
+    <section class="analysis-section" aria-labelledby="contracts-title">
+      <div class="section-heading"><div><p class="eyebrow">VERSION 3 · VERTRÄGE</p><h2 id="contracts-title">Kündigungsfristen & Erinnerungen</h2></div></div>
+      <article class="analysis-panel"><p class="analysis-copy">Die Fristen werden aus deinen Angaben berechnet. Hinweise erscheinen beim Öffnen der App – keine Push-Nachrichten im Hintergrund. Prüfe Fristen immer anhand deines Vertrags.</p>
+        <div id="deadline-summary" class="deadline-summary" aria-live="polite"></div>
+        <div id="deadline-list" class="deadline-list"></div>
       </article>
     </section>
 
@@ -81,8 +90,10 @@
     </section>
 
     <footer>
-      <p>Deine Daten werden lokal in diesem Browser gespeichert. Auch Version 2 verbindet sich nicht mit deiner Bank.</p>
+      <p>Deine Daten werden lokal in diesem Browser gespeichert. Auch Version 3 verbindet sich nicht mit deiner Bank.</p>
       <button id="export-button" class="text-button" type="button">Daten exportieren</button>
+      <button id="import-button" class="text-button" type="button">Daten importieren</button>
+      <input id="import-file" type="file" accept="application/json,.json" hidden>
       <button id="reset-button" class="text-button danger" type="button">Alle Daten löschen</button>
     </footer>
   </main>
@@ -136,6 +147,14 @@
           <input id="expense-date" name="date" type="date" required>
         </div>
       </div>
+
+      <fieldset class="contract-fields"><legend>Vertragsdaten (optional)</legend>
+        <p class="analysis-copy">Trage das Vertragsende und die Kündigungsfrist ein. Ohne Vertragsende gibt es keine Fristberechnung.</p>
+        <div class="form-row"><div class="field"><label for="contract-end">Vertragsende</label><input id="contract-end" type="date"></div>
+        <div class="field"><label for="notice-days">Kündigungsfrist (Tage vor Ende)</label><input id="notice-days" type="number" min="0" max="3650" step="1" value="30"></div></div>
+        <div class="form-row"><div class="field"><label for="reminder-days">Erinnerung (Tage vor Kündigungsfrist)</label><input id="reminder-days" type="number" min="0" max="3650" step="1" value="14"></div>
+        <div class="field"><label for="contract-note">Notiz</label><input id="contract-note" maxlength="160" placeholder="z. B. Kündigung per Kundenportal"></div></div>
+      </fieldset>
       <label class="checkbox-row">
         <input id="expense-active" type="checkbox" checked>
         <span>Diese Ausgabe ist aktiv</span>
