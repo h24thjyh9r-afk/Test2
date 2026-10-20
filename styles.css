@@ -106,3 +106,25 @@ input:focus, select:focus { border-color: #4f8d7c; box-shadow: 0 0 0 3px rgba(79
 
 /* Version 3: Kündigungsfristen */
 .contract-fields{margin-top:20px;padding:14px;border:1px solid #dbe5ec;border-radius:14px}.contract-fields legend{font-weight:750;color:#142b4a;padding:0 5px}.contract-fields .analysis-copy{font-size:12px;margin:4px 0 12px}.deadline-summary{font-weight:700;margin:16px 0;color:#142b4a}.deadline-item{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:15px 12px;border-bottom:1px solid #e8edf2;border-left:4px solid #ccd8e4}.deadline-item.urgent{border-left-color:#e39a22;background:#fffaf0}.deadline-item.expired{border-left-color:#c95757;background:#fff6f6}.deadline-item strong{font-size:14px}.deadline-meta{font-size:12px;color:#667587;margin-top:5px;overflow-wrap:anywhere}.deadline-status{font-size:12px;font-weight:750;white-space:nowrap}.deadline-item.urgent .deadline-status{color:#966014}.deadline-item.expired .deadline-status{color:#b03c3c}@media(max-width:650px){.deadline-item{align-items:start;flex-direction:column;gap:7px}.deadline-status{white-space:normal}}
+
+/* Version 4 */
+.dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+.dashboard-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.dashboard-stat{padding:13px;border-radius:12px;background:#eef3f8;display:flex;flex-direction:column;gap:4px}
+.dashboard-stat span{font-size:.85rem;color:#42566c}.dashboard-stat strong{font-size:1.5rem;color:#142b4a}
+.forecast-total{font-size:1.15rem;font-weight:750;margin:14px 0}
+.forecast-chart{display:grid;gap:8px}.forecast-row{display:grid;grid-template-columns:66px minmax(0,1fr) 110px;gap:10px;align-items:center;font-size:.8rem}.forecast-row strong{text-align:right}.forecast-track{height:9px;background:#e5edf5;border-radius:99px;overflow:hidden}.forecast-fill{height:100%;background:#2d83bb;border-radius:99px}
+#print-report-content{display:none}
+@media(max-width:720px){.dashboard-grid{grid-template-columns:1fr}.forecast-row{grid-template-columns:60px minmax(0,1fr) 100px}}
+@media print{
+  @page{size:A4;margin:15mm}
+  body{background:white!important;color:#111!important;font:10pt Arial,sans-serif!important}
+  body>*:not(#print-report-content){display:none!important}
+  #print-report-content{display:block!important;position:static!important;visibility:visible!important}
+  #print-report-content h1{font-size:21pt;margin:0 0 8mm}
+  #print-report-content h2{font-size:13pt;margin:8mm 0 3mm;break-after:avoid}
+  #print-report-content table{border-collapse:collapse;width:100%;font-size:9pt}
+  #print-report-content th,#print-report-content td{border:1px solid #bbb;padding:5px;text-align:left;overflow-wrap:anywhere}
+  #print-report-content tr{break-inside:avoid}
+  #print-report-content .report-note{margin-top:12mm;font-size:8pt}
+}

@@ -42,7 +42,7 @@
 
 
     <section class="analysis-section" aria-labelledby="analysis-title">
-      <div class="section-heading"><div><p class="eyebrow">VERSION 3 · AUSWERTUNG</p><h2 id="analysis-title">Deine Kostenanalyse</h2></div></div>
+      <div class="section-heading"><div><p class="eyebrow">VERSION 4 · AUSWERTUNG</p><h2 id="analysis-title">Deine Kostenanalyse</h2></div></div>
       <div class="analysis-grid">
         <article class="analysis-panel"><h3>Auf einen Blick</h3><p id="analysis-overview" class="analysis-copy">Noch keine aktiven Fixkosten.</p><div id="top-expenses"></div></article>
         <article class="analysis-panel"><h3>Kosten nach Kategorien</h3><p class="analysis-copy">Monatliche Vergleichswerte aktiver Ausgaben</p><div id="category-chart" class="category-chart"></div></article>
@@ -55,8 +55,18 @@
     </section>
 
 
+
+    <section class="analysis-section" aria-labelledby="dashboard-title">
+      <div class="section-heading"><div><p class="eyebrow">VERSION 4 · DASHBOARD</p><h2 id="dashboard-title">Verträge & 12-Monats-Prognose</h2></div></div>
+      <div class="dashboard-grid">
+        <article class="analysis-panel"><h3>Vertrags-Dashboard</h3><div id="contract-dashboard" class="dashboard-stats"></div><p class="analysis-copy">Es werden nur aktive Verträge mit gültigem Enddatum für Fristen berücksichtigt.</p></article>
+        <article class="analysis-panel"><h3>Prognose für die nächsten 12 Monate</h3><p class="analysis-copy">Monatliche Durchschnittswerte auf Basis der aktuell aktiven Ausgaben. Keine Vorhersage konkreter Abbuchungstage, Preisanpassungen oder Vertragsverlängerungen.</p><div id="forecast-total" class="forecast-total"></div><div id="forecast-chart" class="forecast-chart"></div></article>
+      </div>
+      <article class="analysis-panel"><h3>Vertragsbericht als PDF</h3><p class="analysis-copy">Erstellt eine druckfreundliche Übersicht. Im Druckdialog „Als PDF speichern“ auswählen. Die Daten verlassen dafür nicht die App; die Druckfunktion des Browsers wird verwendet.</p><button id="print-report" class="button button-primary" type="button">Vertragsbericht drucken / als PDF speichern</button></article>
+    </section>
+
     <section class="analysis-section" aria-labelledby="contracts-title">
-      <div class="section-heading"><div><p class="eyebrow">VERSION 3 · VERTRÄGE</p><h2 id="contracts-title">Kündigungsfristen & Erinnerungen</h2></div></div>
+      <div class="section-heading"><div><p class="eyebrow">VERSION 4 · VERTRÄGE</p><h2 id="contracts-title">Kündigungsfristen & Erinnerungen</h2></div></div>
       <article class="analysis-panel"><p class="analysis-copy">Die Fristen werden aus deinen Angaben berechnet. Hinweise erscheinen beim Öffnen der App – keine Push-Nachrichten im Hintergrund. Prüfe Fristen immer anhand deines Vertrags.</p>
         <div id="deadline-summary" class="deadline-summary" aria-live="polite"></div>
         <div id="deadline-list" class="deadline-list"></div>
@@ -90,7 +100,7 @@
     </section>
 
     <footer>
-      <p>Deine Daten werden lokal in diesem Browser gespeichert. Auch Version 3 verbindet sich nicht mit deiner Bank.</p>
+      <p>Deine Daten werden lokal in diesem Browser gespeichert. Auch Version 4 verbindet sich nicht mit deiner Bank.</p>
       <button id="export-button" class="text-button" type="button">Daten exportieren</button>
       <button id="import-button" class="text-button" type="button">Daten importieren</button>
       <input id="import-file" type="file" accept="application/json,.json" hidden>
@@ -167,6 +177,7 @@
     </form>
   </dialog>
 
+  <section id="print-report-content" aria-label="Druckbericht"></section>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script src="./app.js"></script>
 </body>

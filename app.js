@@ -113,6 +113,7 @@ function render() {
 
   renderAnalysis(active, monthly);
   renderDeadlines();
+  renderDashboard(active, monthly);
   if (active.length === 0) {
     $("insight-text").textContent = "Aktiviere oder füge Fixkosten hinzu, um deine laufenden Ausgaben und mögliche Einsparungen zu vergleichen.";
   } else {
@@ -268,6 +269,40 @@ $("reset-button").addEventListener("click", () => {
     showToast("Alle Daten wurden gelöscht.");
   }
 });
+
+
+function renderDashboard(active, monthly) {
+  const withEnd = active.map(item => ({item, data: deadlineData(item)})).filter(x => x.data);
+  const urgent = withEnd.filter(x => x.data.remaining >= 0 && x.data.remaining <= x.data.reminder);
+  const expired = withEnd.filter(x => x.data.remaining < 0);
+  const withoutEnd = active.length - withEnd.length;
+  const stats = [
+    ["Aktive Ausgaben", active.length],
+    ["Mit Vertragsende", withEnd.length],
+    ["Frist bald fällig", urgent.length],
+    ["Frist überschritten", expired.length],
+    ["Ohne Vertragsende", withoutEnd]
+  ];
+  $("contract-dashboard").innerHTML = stats.map(([name,count]) => `<div class="dashboard-stat"><span>${name}</span><strong>${count}</strong></div>`).join("");
+  const now = new Date();
+  const labels = Array.from({length:12},(_,i)=>{
+    const d = new Date(now.getFullYear(),now.getMonth()+i,1);
+    return new Intl.DateTimeFormat("de-DE",{month:"short",year:"2-digit"}).format(d);
+  });
+  $("forecast-total").textContent = `${money.format(monthly*12)} für 12 Monate (hochgerechnet)`;
+  $("forecast-chart").innerHTML = labels.map((label,i) => `<div class="forecast-row"><span>${safeText(label)}</span><div class="forecast-track"><div class="forecast-fill" style="width:${monthly>0?100:0}%"></div></div><strong>${money.format(monthly)}</strong></div>`).join("");
+}
+function buildPrintReport() {
+  const active = expenses.filter(x=>x.active);
+  const monthly = active.reduce((sum,x)=>sum+monthlyAmount(x),0);
+  const dated = active.map(item=>({item,data:deadlineData(item)})).filter(x=>x.data).sort((a,b)=>a.data.deadline-b.data.deadline);
+  const categories = new Map();
+  active.forEach(x=>categories.set(x.category||"Sonstiges",(categories.get(x.category||"Sonstiges")||0)+monthlyAmount(x)));
+  const today = dateFmt.format(new Date());
+  const rows = (headers, data) => `<table><thead><tr>${headers.map(x=>`<th>${x}</th>`).join("")}</tr></thead><tbody>${data.length?data.map(row=>`<tr>${row.map(x=>`<td>${safeText(x)}</td>`).join("")}</tr>`).join(""):`<tr><td colspan="${headers.length}">Keine Einträge</td></tr>`}</tbody></table>`;
+  $("print-report-content").innerHTML = `<h1>FixkostenWächter – Vertragsbericht</h1><p>Erstellt am ${safeText(today)} · Nur lokal gespeicherte Daten</p><h2>Kostenüberblick</h2><p><strong>${money.format(monthly)} monatlich</strong> · ${money.format(monthly*12)} jährlich (hochgerechnet) · ${active.length} aktive Ausgaben</p><h2>Kategorien</h2>${rows(["Kategorie","Monatlich"],[...categories.entries()].sort((a,b)=>b[1]-a[1]).map(([name,sum])=>[name,money.format(sum)]))}<h2>Aktive Fixkosten</h2>${rows(["Name","Kategorie","Betrag","Intervall","Monatswert"],active.map(x=>[x.name,x.category||"Sonstiges",money.format(Number(x.amount)),cycleLabel(x.cycle),money.format(monthlyAmount(x))]))}<h2>Kündigungsfristen</h2>${rows(["Vertrag","Vertragsende","Kündigen bis","Status"],dated.map(({item,data})=>[item.name,dateFmt.format(data.end),dateFmt.format(data.deadline),data.remaining<0?"Frist überschritten":data.remaining===0?"Heute":`${data.remaining} Tage verbleibend`]))}<h2>12-Monats-Prognose</h2><p>${money.format(monthly*12)} als gleichbleibender Kosten-Durchschnitt; keine tatsächliche Zahlungsplanung. Vertragsbedingungen und Kündigungsfristen bitte separat prüfen.</p><p class="report-note">Dieser Bericht ist eine Übersicht und keine Rechtsberatung oder Kündigungsbestätigung.</p>`;
+}
+$("print-report").addEventListener("click",()=>{buildPrintReport();window.print();});
 
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
   window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
