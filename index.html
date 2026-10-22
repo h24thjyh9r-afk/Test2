@@ -11,15 +11,21 @@
   <title>FixkostenWächter</title>
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand-mark" aria-hidden="true">€</div>
-    <div>
-      <p class="eyebrow">DEIN GELD. DEIN ÜBERBLICK.</p>
-      <h1>Fixkosten<span>Wächter</span></h1>
-    </div>
-  </header>
-
-  <main>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Hauptmenü">
+      <div class="sidebar-brand"><div class="brand-mark" aria-hidden="true">€</div><div><p class="eyebrow">DEIN GELD. DEIN ÜBERBLICK.</p><strong>Fixkosten<span>Wächter</span></strong></div></div>
+      <nav class="side-nav" aria-label="Bereiche"><button class="nav-link" type="button" data-target="uebersicht" aria-current="page"><span class="nav-icon" aria-hidden="true">⌂</span><span>Übersicht</span></button>
+<button class="nav-link" type="button" data-target="fixkosten" aria-current="false"><span class="nav-icon" aria-hidden="true">≡</span><span>Fixkosten</span></button>
+<button class="nav-link" type="button" data-target="sparanalyse" aria-current="false"><span class="nav-icon" aria-hidden="true">↗</span><span>Sparanalyse</span></button>
+<button class="nav-link" type="button" data-target="vertraege" aria-current="false"><span class="nav-icon" aria-hidden="true">▤</span><span>Verträge & Fristen</span></button>
+<button class="nav-link" type="button" data-target="prognose" aria-current="false"><span class="nav-icon" aria-hidden="true">▥</span><span>Prognose & Bericht</span></button>
+<button class="nav-link" type="button" data-target="einstellungen" aria-current="false"><span class="nav-icon" aria-hidden="true">⚙</span><span>Daten & Einstellungen</span></button></nav>
+      <p class="sidebar-note">Version 5 · Deine Daten bleiben auf diesem Gerät.</p>
+    </aside>
+    <div class="workspace">
+      <header class="workspace-header"><button id="menu-toggle" class="menu-toggle" type="button" aria-label="Menü öffnen" aria-expanded="false" aria-controls="sidebar">☰</button><div><p class="eyebrow">FIXKOSTENWÄCHTER</p><h1 id="page-title">Übersicht</h1></div><button class="button button-primary quick-add" type="button" id="quick-add">＋ Ausgabe</button></header>
+      <main id="main-content">
+        <div class="app-view" id="view-uebersicht" data-view="uebersicht">
     <section class="hero" aria-labelledby="overview-title">
       <div class="hero-copy">
         <p class="eyebrow light">DEINE WIEDERKEHRENDEN AUSGABEN</p>
@@ -41,39 +47,20 @@
     </section>
 
 
-    <section class="analysis-section" aria-labelledby="analysis-title">
-      <div class="section-heading"><div><p class="eyebrow">VERSION 4 · AUSWERTUNG</p><h2 id="analysis-title">Deine Kostenanalyse</h2></div></div>
-      <div class="analysis-grid">
-        <article class="analysis-panel"><h3>Auf einen Blick</h3><p id="analysis-overview" class="analysis-copy">Noch keine aktiven Fixkosten.</p><div id="top-expenses"></div></article>
-        <article class="analysis-panel"><h3>Kosten nach Kategorien</h3><p class="analysis-copy">Monatliche Vergleichswerte aktiver Ausgaben</p><div id="category-chart" class="category-chart"></div></article>
+
+          <div class="overview-actions"><button class="button button-primary" type="button" data-go="fixkosten">Fixkosten verwalten →</button><button class="button button-secondary" type="button" data-go="vertraege">Kündigungsfristen ansehen</button></div>
+          <div class="overview-mini-grid"><article class="analysis-panel"><h3>Vertragsstatus</h3><div id="overview-contract-stats" class="dashboard-stats"></div><button class="inline-nav" type="button" data-go="vertraege">Alle Verträge ansehen →</button></article><article class="analysis-panel"><h3>Dein Spar-Check</h3>    <section class="insight-card">
+      <div class="insight-icon" aria-hidden="true">✦</div>
+      <div>
+        <p class="eyebrow">KLEINER SPAR-CHECK</p>
+        <h3>Was könntest du sparen?</h3>
+        <p id="insight-text">Füge deine regelmäßigen Ausgaben hinzu, um dein mögliches Sparpotenzial zu überblicken.</p>
       </div>
-      <article class="analysis-panel simulator"><h3>Dein Sparsimulator</h3><p class="analysis-copy">Wähle Ausgaben aus, die du hypothetisch einsparen könntest. Deine gespeicherten Daten bleiben unverändert.</p>
-        <div id="savings-options" class="savings-options"></div>
-        <div class="savings-totals"><div><span>Potenzial pro Monat</span><strong id="savings-monthly">0,00 €</strong></div><div><span>Potenzial pro Jahr</span><strong id="savings-yearly">0,00 €</strong></div></div>
-        <button id="clear-simulation" class="button button-secondary" type="button">Auswahl zurücksetzen</button>
-      </article>
     </section>
 
-
-
-    <section class="analysis-section" aria-labelledby="dashboard-title">
-      <div class="section-heading"><div><p class="eyebrow">VERSION 4 · DASHBOARD</p><h2 id="dashboard-title">Verträge & 12-Monats-Prognose</h2></div></div>
-      <div class="dashboard-grid">
-        <article class="analysis-panel"><h3>Vertrags-Dashboard</h3><div id="contract-dashboard" class="dashboard-stats"></div><p class="analysis-copy">Es werden nur aktive Verträge mit gültigem Enddatum für Fristen berücksichtigt.</p></article>
-        <article class="analysis-panel"><h3>Prognose für die nächsten 12 Monate</h3><p class="analysis-copy">Monatliche Durchschnittswerte auf Basis der aktuell aktiven Ausgaben. Keine Vorhersage konkreter Abbuchungstage, Preisanpassungen oder Vertragsverlängerungen.</p><div id="forecast-total" class="forecast-total"></div><div id="forecast-chart" class="forecast-chart"></div></article>
-      </div>
-      <article class="analysis-panel"><h3>Vertragsbericht als PDF</h3><p class="analysis-copy">Erstellt eine druckfreundliche Übersicht. Im Druckdialog „Als PDF speichern“ auswählen. Die Daten verlassen dafür nicht die App; die Druckfunktion des Browsers wird verwendet.</p><button id="print-report" class="button button-primary" type="button">Vertragsbericht drucken / als PDF speichern</button></article>
-    </section>
-
-    <section class="analysis-section" aria-labelledby="contracts-title">
-      <div class="section-heading"><div><p class="eyebrow">VERSION 4 · VERTRÄGE</p><h2 id="contracts-title">Kündigungsfristen & Erinnerungen</h2></div></div>
-      <article class="analysis-panel"><p class="analysis-copy">Die Fristen werden aus deinen Angaben berechnet. Hinweise erscheinen beim Öffnen der App – keine Push-Nachrichten im Hintergrund. Prüfe Fristen immer anhand deines Vertrags.</p>
-        <div id="deadline-summary" class="deadline-summary" aria-live="polite"></div>
-        <div id="deadline-list" class="deadline-list"></div>
-      </article>
-    </section>
-
-    <section class="section-heading">
+<button class="inline-nav" type="button" data-go="sparanalyse">Sparanalyse öffnen →</button></article></div>
+        </div>
+        <div class="app-view" id="view-fixkosten" data-view="fixkosten" hidden><div class="view-intro"><h2>Deine Fixkosten</h2><p>Verwalte deine regelmäßigen Ausgaben an einem Ort.</p></div>    <section class="section-heading">
       <div>
         <p class="eyebrow">DEINE LISTE</p>
         <h2>Fixkosten</h2>
@@ -90,23 +77,54 @@
       <button id="empty-add-button" class="button button-primary" type="button">Erste Fixkosten eintragen</button>
     </section>
 
-    <section class="insight-card">
-      <div class="insight-icon" aria-hidden="true">✦</div>
-      <div>
-        <p class="eyebrow">KLEINER SPAR-CHECK</p>
-        <h3>Was könntest du sparen?</h3>
-        <p id="insight-text">Füge deine regelmäßigen Ausgaben hinzu, um dein mögliches Sparpotenzial zu überblicken.</p>
+</div>
+        <div class="app-view" id="view-sparanalyse" data-view="sparanalyse" hidden><div class="view-intro"><h2>Sparanalyse</h2><p>Erkenne Kostentreiber und simuliere Einsparungen.</p></div>    <section class="analysis-section" aria-labelledby="analysis-title">
+      <div class="section-heading"><div><p class="eyebrow">VERSION 4 · AUSWERTUNG</p><h2 id="analysis-title">Deine Kostenanalyse</h2></div></div>
+      <div class="analysis-grid">
+        <article class="analysis-panel"><h3>Auf einen Blick</h3><p id="analysis-overview" class="analysis-copy">Noch keine aktiven Fixkosten.</p><div id="top-expenses"></div></article>
+        <article class="analysis-panel"><h3>Kosten nach Kategorien</h3><p class="analysis-copy">Monatliche Vergleichswerte aktiver Ausgaben</p><div id="category-chart" class="category-chart"></div></article>
       </div>
+      <article class="analysis-panel simulator"><h3>Dein Sparsimulator</h3><p class="analysis-copy">Wähle Ausgaben aus, die du hypothetisch einsparen könntest. Deine gespeicherten Daten bleiben unverändert.</p>
+        <div id="savings-options" class="savings-options"></div>
+        <div class="savings-totals"><div><span>Potenzial pro Monat</span><strong id="savings-monthly">0,00 €</strong></div><div><span>Potenzial pro Jahr</span><strong id="savings-yearly">0,00 €</strong></div></div>
+        <button id="clear-simulation" class="button button-secondary" type="button">Auswahl zurücksetzen</button>
+      </article>
     </section>
 
-    <footer>
+
+
+</div>
+        <div class="app-view" id="view-vertraege" data-view="vertraege" hidden><div class="view-intro"><h2>Verträge & Kündigungsfristen</h2><p>Wichtige Termine und Erinnerungen im Blick.</p></div>    <section class="analysis-section" aria-labelledby="contracts-title">
+      <div class="section-heading"><div><p class="eyebrow">VERSION 4 · VERTRÄGE</p><h2 id="contracts-title">Kündigungsfristen & Erinnerungen</h2></div></div>
+      <article class="analysis-panel"><p class="analysis-copy">Die Fristen werden aus deinen Angaben berechnet. Hinweise erscheinen beim Öffnen der App – keine Push-Nachrichten im Hintergrund. Prüfe Fristen immer anhand deines Vertrags.</p>
+        <div id="deadline-summary" class="deadline-summary" aria-live="polite"></div>
+        <div id="deadline-list" class="deadline-list"></div>
+      </article>
+    </section>
+
+</div>
+        <div class="app-view" id="view-prognose" data-view="prognose" hidden><div class="view-intro"><h2>Prognose & Bericht</h2><p>Deine Kosten für die kommenden zwölf Monate.</p></div>    <section class="analysis-section" aria-labelledby="dashboard-title">
+      <div class="section-heading"><div><p class="eyebrow">VERSION 4 · DASHBOARD</p><h2 id="dashboard-title">Verträge & 12-Monats-Prognose</h2></div></div>
+      <div class="dashboard-grid">
+        <article class="analysis-panel"><h3>Vertrags-Dashboard</h3><div id="contract-dashboard" class="dashboard-stats"></div><p class="analysis-copy">Es werden nur aktive Verträge mit gültigem Enddatum für Fristen berücksichtigt.</p></article>
+        <article class="analysis-panel"><h3>Prognose für die nächsten 12 Monate</h3><p class="analysis-copy">Monatliche Durchschnittswerte auf Basis der aktuell aktiven Ausgaben. Keine Vorhersage konkreter Abbuchungstage, Preisanpassungen oder Vertragsverlängerungen.</p><div id="forecast-total" class="forecast-total"></div><div id="forecast-chart" class="forecast-chart"></div></article>
+      </div>
+      <article class="analysis-panel"><h3>Vertragsbericht als PDF</h3><p class="analysis-copy">Erstellt eine druckfreundliche Übersicht. Im Druckdialog „Als PDF speichern“ auswählen. Die Daten verlassen dafür nicht die App; die Druckfunktion des Browsers wird verwendet.</p><button id="print-report" class="button button-primary" type="button">Vertragsbericht drucken / als PDF speichern</button></article>
+    </section>
+
+</div>
+        <div class="app-view" id="view-einstellungen" data-view="einstellungen" hidden><div class="view-intro"><h2>Daten & Einstellungen</h2><p>Datensicherung und lokale Datenverwaltung.</p></div><div class="analysis-panel">    <footer>
       <p>Deine Daten werden lokal in diesem Browser gespeichert. Auch Version 4 verbindet sich nicht mit deiner Bank.</p>
       <button id="export-button" class="text-button" type="button">Daten exportieren</button>
       <button id="import-button" class="text-button" type="button">Daten importieren</button>
       <input id="import-file" type="file" accept="application/json,.json" hidden>
       <button id="reset-button" class="text-button danger" type="button">Alle Daten löschen</button>
     </footer>
-  </main>
+</div></div>
+      </main>
+    </div>
+  </div>
+  <button class="sidebar-backdrop" id="sidebar-backdrop" type="button" aria-label="Menü schließen" hidden></button>
 
   <dialog id="expense-dialog">
     <form id="expense-form" method="dialog">

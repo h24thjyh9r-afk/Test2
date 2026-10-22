@@ -1,26 +1,18 @@
-# FixkostenWächter Version 4
+# FixkostenWächter Version 5 – neue Navigation
 
-Deutschsprachige, lokal speichernde PWA ohne Backend oder laufende Servergebühren.
+## Neu
+Die App hat jetzt ein links angeordnetes Seitenmenü (auf dem iPhone über ☰ erreichbar). Die Startseite zeigt nur Monats-/Jahreskosten, Vertragsstatus und einen kurzen Spar-Check. Weitere Bereiche: Fixkosten, Sparanalyse, Verträge & Fristen, Prognose & Bericht sowie Daten & Einstellungen. Die bisherigen Funktionen aus Version 4 sind erhalten.
 
-## Neu in Version 4
-- Vertrags-Dashboard: aktive Ausgaben, Verträge mit Enddatum, bevorstehende und überschrittene Kündigungsfristen.
-- 12-Monats-Prognose: auf Monatsbasis umgerechnete, unveränderte aktuelle Fixkosten für die nächsten 12 Monate. **Keine exakten Abbuchungstermine und keine automatische Berücksichtigung von Vertragsende, Preisänderungen oder Kündigungen.**
-- Vertragsbericht: Schaltfläche „Vertragsbericht drucken / als PDF speichern“ öffnet den Druckdialog. Unter Windows dort „Microsoft Print to PDF“ oder „Als PDF speichern“ wählen; auf dem iPhone über die Druckvorschau als PDF in Dateien sichern. Es wird keine externe PDF-Bibliothek benötigt.
-- Funktionen aus V1–V3 bleiben bestehen: Erfassen, Bearbeiten, Pausieren, Löschen, Sparsimulation, Kategorien, Suche, Fristen, Erinnerungen, JSON-Import und -Export.
+## Windows
+1. ZIP entpacken und Ordner `FixkostenWaechter_V5` öffnen.
+2. PowerShell im Ordner starten: `py -m http.server 8000` (Python 3 erforderlich).
+3. `http://localhost:8000` im Browser öffnen.
 
-## Installation auf Windows
-1. ZIP entpacken, den Ordner `FixkostenWaechter_V4` öffnen.
-2. Python 3 installieren, falls noch nicht vorhanden.
-3. Terminal im Ordner öffnen und `py -m http.server 8000` ausführen.
-4. `http://localhost:8000` im Browser öffnen.
-5. Für einen Test ohne Python kann `index.html` direkt geöffnet werden; Offline-PWA-Funktionen benötigen jedoch localhost oder HTTPS.
+## iPhone / Update von Version 4
+1. **Vor dem Update** in Version 4 unter „Daten exportieren“ eine JSON-Sicherung erstellen.
+2. Die Dateien aus Version 5 am **gleichen Veröffentlichungsort** wie Version 4 ersetzen (z. B. bestehendes GitHub-Pages-Repository).
+3. Safari öffnen und die Seite neu laden, gegebenenfalls die installierte Web-App neu starten. Über ☰ wird das linke Menü eingeblendet.
+4. Bei gleicher Origin und gleichem Browser bleibt `localStorage` mit Schlüssel `fixkostenwaechter.v1` erhalten. Bei einer neuen Webadresse oder einem anderen Gerät über „Daten & Einstellungen“ → „Daten importieren“ die Sicherung einspielen.
 
-## Update / iPhone
-1. In Version 3 über „Daten exportieren“ eine JSON-Sicherung anlegen.
-2. Die Dateien der V4 an derselben Webadresse wie V3 ersetzen. Bei GitHub Pages die neuen Dateien ins bestehende öffentliche Repository hochladen.
-3. Im Browser neu laden; bei zwischengespeicherter Version ggf. App schließen und erneut öffnen.
-4. Bei unveränderter Origin und Browser bleiben Einträge im localStorage erhalten (`fixkostenwaechter.v1`). Bei anderer Adresse oder Gerät „Daten importieren“ nutzen.
-5. Auf dem iPhone Safari öffnen, Teilen → Zum Home-Bildschirm. GitHub Pages ist für öffentliche Repositories kostenlos; die App benötigt keine bezahlten Dienste.
-
-## Datenschutz und Grenzen
-Daten liegen nur im jeweiligen Browser (localStorage), ohne Synchronisierung. Die PDF-Druckvorschau wird lokal erstellt; der Browser bzw. das Betriebssystem übernimmt den PDF-Export. Beim Löschen von Browserdaten können Einträge verloren gehen: regelmäßig JSON exportieren. Kündigungsfristen sind Rechenhilfen und ersetzen nicht die Prüfung der Vertragsbedingungen. Erinnerungen erscheinen nur innerhalb der App, nicht als Hintergrund-Push. Die Kostenprognose ist eine Hochrechnung, keine Zahlungsstromplanung.
+## Datenschutz und Kosten
+Keine Datenbank, kein Konto, keine kostenpflichtige API. Fixkosten bleiben lokal im Browser; keine automatische Synchronisierung. GitHub Pages kann für öffentliche Repositories kostenlos verwendet werden. Erinnerungen erscheinen in der App, nicht als Hintergrund-Push. Die 12-Monats-Prognose ist eine Hochrechnung. Der PDF-Bericht wird über den Druckdialog des Browsers erstellt.

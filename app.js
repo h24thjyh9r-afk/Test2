@@ -308,3 +308,34 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
   window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
 }
 render();
+
+
+// Version 5: Navigation ohne Seitenneuladung – alle Daten und Funktionen bleiben erhalten.
+const VIEW_TITLES = {uebersicht:"Übersicht",fixkosten:"Fixkosten",sparanalyse:"Sparanalyse",vertraege:"Verträge & Fristen",prognose:"Prognose & Bericht",einstellungen:"Daten & Einstellungen"};
+function closeMenu(){document.getElementById("sidebar").classList.remove("open");document.getElementById("sidebar-backdrop").hidden=true;document.getElementById("menu-toggle").setAttribute("aria-expanded","false");}
+function showView(name){
+  if(!Object.prototype.hasOwnProperty.call(VIEW_TITLES,name))name="uebersicht";
+  document.querySelectorAll(".app-view").forEach(el=>el.hidden=el.dataset.view!==name);
+  document.querySelectorAll(".nav-link").forEach(el=>el.setAttribute("aria-current",el.dataset.target===name?"page":"false"));
+  document.getElementById("page-title").textContent=VIEW_TITLES[name];
+  closeMenu();window.scrollTo(0,0);
+  if(location.hash!=="#"+name)history.replaceState(null,"","#"+name);
+}
+document.querySelectorAll(".nav-link").forEach(button=>button.addEventListener("click",()=>showView(button.dataset.target)));
+document.querySelectorAll("[data-go]").forEach(button=>button.addEventListener("click",()=>showView(button.dataset.go)));
+document.getElementById("menu-toggle").addEventListener("click",()=>{const side=document.getElementById("sidebar");const open=!side.classList.contains("open");side.classList.toggle("open",open);document.getElementById("sidebar-backdrop").hidden=!open;document.getElementById("menu-toggle").setAttribute("aria-expanded",String(open));});
+document.getElementById("sidebar-backdrop").addEventListener("click",closeMenu);
+document.addEventListener("keydown",event=>{if(event.key==="Escape")closeMenu();});
+document.getElementById("quick-add").addEventListener("click",()=>document.getElementById("add-button").click());
+window.addEventListener("hashchange",()=>showView(location.hash.slice(1)));
+showView(location.hash.slice(1)||"uebersicht");
+
+// Die Kurzstatistik auf der Startseite verwendet dieselben Vertragsdaten wie das Dashboard.
+const originalRenderDashboard=renderDashboard;
+renderDashboard=function(active,monthly){
+ originalRenderDashboard(active,monthly);
+ const source=document.getElementById("contract-dashboard");
+ const target=document.getElementById("overview-contract-stats");
+ if(source&&target)target.innerHTML=source.innerHTML;
+};
+render();
