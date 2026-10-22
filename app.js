@@ -23,6 +23,7 @@ function validExpense(item) {
 function save() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(expenses));
   render();
+  renderV6();
 }
 function monthlyAmount(item) {
   const amount = Number(item.amount);
@@ -311,7 +312,7 @@ render();
 
 
 // Version 5: Navigation ohne Seitenneuladung – alle Daten und Funktionen bleiben erhalten.
-const VIEW_TITLES = {uebersicht:"Übersicht",fixkosten:"Fixkosten",sparanalyse:"Sparanalyse",vertraege:"Verträge & Fristen",prognose:"Prognose & Bericht",einstellungen:"Daten & Einstellungen"};
+const VIEW_TITLES = {uebersicht:"Übersicht",fixkosten:"Fixkosten",sparanalyse:"Sparanalyse",vertraege:"Verträge & Fristen",prognose:"Prognose & Bericht",einstellungen:"Daten & Einstellungen",assistent:"Sparassistent",kalender:"Zahlungskalender",preise:"Preisentwicklung"};
 function closeMenu(){document.getElementById("sidebar").classList.remove("open");document.getElementById("sidebar-backdrop").hidden=true;document.getElementById("menu-toggle").setAttribute("aria-expanded","false");}
 function showView(name){
   if(!Object.prototype.hasOwnProperty.call(VIEW_TITLES,name))name="uebersicht";
@@ -339,3 +340,95 @@ renderDashboard=function(active,monthly){
  if(source&&target)target.innerHTML=source.innerHTML;
 };
 render();
+
+// Version 6: Zusatzdaten getrennt vom unveränderten V1–V5-Format speichern.
+const V6_HISTORY_KEY="fixkostenwaechter.v6.priceHistory";
+const V6_BACKUP_KEY="fixkostenwaechter.v6.lastExport";
+let priceHistory={};
+try {const parsed=JSON.parse(localStorage.getItem(V6_HISTORY_KEY)||"{}");if(parsed&&typeof parsed==="object"&&!Array.isArray(parsed))priceHistory=parsed;}catch{}
+const v6Today=()=>new Date();
+const isoDate=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+const dateFromISO=s=>/^\d{4}-\d{2}-\d{2}$/.test(s||"")?new Date(`${s}T12:00:00`):null;
+const monthAdd=(date,n,anchor)=>{const d=new Date(date.getFullYear(),date.getMonth()+n,1,12);const last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();d.setDate(Math.min(anchor,last));return d;};
+function dueDates(item,start,end){
+ const first=dateFromISO(item.date);if(!first||!Number.isFinite(first.getTime()))return [];
+ const results=[];const push=d=>{if(d>=start&&d<end&&d>=first)results.push(new Date(d));};
+ if(item.cycle==="weekly"){
+  let n=Math.max(0,Math.floor((start-first)/86400000/7)-1);
+  for(let i=n;i<n+70;i++){const d=new Date(first);d.setDate(first.getDate()+7*i);if(d>=end)break;push(d);}
+ }else{
+  const step={monthly:1,quarterly:3,yearly:12}[item.cycle];if(!step)return [];
+  let n=Math.max(0,Math.floor(((start.getFullYear()-first.getFullYear())*12+start.getMonth()-first.getMonth())/step)-1);
+  for(let i=n;i<n+20;i++){const d=monthAdd(first,i*step,first.getDate());if(d>=end)break;push(d);}
+ }
+ return results;
+}
+function renderAssistant(){
+ const active=expenses.filter(x=>x.active);const monthly=active.reduce((s,x)=>s+monthlyAmount(x),0);const hints=[];
+ for(const item of active){
+  const share=monthly?monthlyAmount(item)/monthly:0;
+  if(share>=.3&&active.length>1)hints.push({name:item.name,text:`Macht ${Math.round(share*100)} % deiner monatlichen Fixkosten aus (${money.format(monthlyAmount(item))}). Ein Preisvergleich könnte sich lohnen.`});
+  const dd=deadlineData(item);
+  if(dd){const days=daysBetween(v6Today(),dd.deadline);if(days>=0&&days<=30)hints.push({name:item.name,text:`Kündigungsfrist in ${days} Tagen. Prüfe rechtzeitig, ob du den Vertrag weiterführen möchtest.`});}
+ }
+ const groups=new Map();for(const x of active){const k=x.name.toLocaleLowerCase("de").trim().replace(/\s+/g," ");if(!groups.has(k))groups.set(k,[]);groups.get(k).push(x);}
+ for(const g of groups.values())if(g.length>1)hints.push({name:g[0].name,text:`${g.length} aktive Einträge mit gleichem Namen. Prüfe, ob eine doppelte Erfassung oder Zahlung vorliegt.`});
+ const sorted=[...active].sort((a,b)=>monthlyAmount(b)-monthlyAmount(a));
+ if(sorted.length&&!hints.length)hints.push({name:"Dein größter Kostenpunkt",text:`${sorted[0].name}: ${money.format(monthlyAmount(sorted[0]))} pro Monat. Bei Bedarf Tarife vergleichen.`});
+ $("assistant-summary").textContent=`${hints.length} Hinweis${hints.length===1?"":"e"} aus ${active.length} aktiven Verträgen. Hinweise sind Prüfempfehlungen, keine nachgewiesenen Einsparungen.`;
+ $("assistant-hints").innerHTML=hints.length?hints.map(h=>`<article class="analysis-panel"><h3>${safeText(h.name)}</h3><p class="analysis-copy">${safeText(h.text)}</p></article>`).join(""):'<div class="analysis-panel">Noch keine Hinweise vorhanden. Ergänze aktive Fixkosten und Vertragsdaten.</div>';
+}
+function renderCalendar(){
+ const field=$("calendar-month");if(!/^\d{4}-\d{2}$/.test(field.value))field.value=isoDate(v6Today()).slice(0,7);
+ const [year,month]=field.value.split("-").map(Number);if(year<1900||year>2200||month<1||month>12)return;
+ const start=new Date(year,month-1,1,0),end=new Date(year,month,1,0),entries=[];
+ for(const x of expenses.filter(e=>e.active))for(const d of dueDates(x,start,end))entries.push({d,x});
+ entries.sort((a,b)=>a.d-b.d||a.x.name.localeCompare(b.x.name,"de"));
+ const sum=entries.reduce((s,e)=>s+Number(e.x.amount),0);
+ $("calendar-total").textContent=`${entries.length} geplante Zahlungen · ${money.format(sum)} im ausgewählten Monat`;
+ const byDay=new Map();for(const e of entries){const k=e.d.getDate();byDay.set(k,(byDay.get(k)||0)+Number(e.x.amount));}
+ const offset=(start.getDay()+6)%7;let cells=Array(offset).fill('<div class="v6-day empty"></div>');
+ for(let day=1;day<end.getDate()+1;day++)cells.push(`<div class="v6-day ${byDay.has(day)?"has-payment":""}"><strong>${day}</strong>${byDay.has(day)?`<small>${money.format(byDay.get(day))}</small>`:""}</div>`);
+ $("calendar-days").innerHTML='<div class="v6-week">'+["Mo","Di","Mi","Do","Fr","Sa","So"].map(s=>`<strong>${s}</strong>`).join("")+'</div><div class="v6-grid">'+cells.join("")+'</div>';
+ $("calendar-list").innerHTML=entries.length?entries.map(e=>`<div class="v6-payment"><span>${dateFmt.format(e.d)} · ${safeText(e.x.name)}</span><strong>${money.format(Number(e.x.amount))}</strong></div>`).join(""):'<p class="analysis-copy">Keine geplanten Zahlungen in diesem Monat.</p>';
+}
+function renderPrices(){
+ const select=$("price-contract"),old=select.value;
+ select.innerHTML=expenses.map(e=>`<option value="${safeText(e.id)}">${safeText(e.name)}</option>`).join("");
+ if(expenses.some(e=>e.id===old))select.value=old;
+ const item=expenses.find(e=>e.id===select.value);$("price-form").hidden=!item;
+ if(!item){$("price-history").innerHTML='<p class="analysis-copy">Bitte zuerst einen Vertrag anlegen.</p>';return;}
+ const entries=Array.isArray(priceHistory[item.id])?priceHistory[item.id]:[];
+ $("price-history").innerHTML=`<p class="analysis-copy">Aktueller Preis: <strong>${money.format(Number(item.amount))} ${safeText(cycleLabel(item.cycle))}</strong></p>`+(entries.length?entries.slice().reverse().map(h=>`<div class="v6-payment"><span>${safeText(h.date)} · ${money.format(h.old)} → ${money.format(h.new)}${h.note?` · ${safeText(h.note)}`:""}</span><strong>${h.new>h.old?"+":""}${money.format(h.new-h.old)}</strong></div>`).join(""):'<p class="analysis-copy">Noch keine Preisänderungen erfasst.</p>');
+}
+function renderBackup(){const last=localStorage.getItem(V6_BACKUP_KEY);const dt=last?new Date(last):null;$("backup-status").textContent=dt&&Number.isFinite(dt.getTime())?`Letzter auf diesem Gerät angestoßener Datenexport: ${dt.toLocaleDateString("de-DE")}. Sichere die Datei außerhalb des Browsers. Preisverläufe sind im V6-Komplettexport enthalten.`:"Noch kein V6-Komplettexport dokumentiert. Sichere deine Daten regelmäßig außerhalb des Browsers.";}
+function renderV6(){renderAssistant();renderCalendar();renderPrices();renderBackup();}
+$("calendar-month").value=isoDate(v6Today()).slice(0,7);
+$("calendar-month").addEventListener("change",renderCalendar);
+$("calendar-current").addEventListener("click",()=>{$("calendar-month").value=isoDate(v6Today()).slice(0,7);renderCalendar();});
+$("price-contract").addEventListener("change",renderPrices);
+$("price-date").value=isoDate(v6Today());
+$("price-form").addEventListener("submit",event=>{
+ event.preventDefault();const item=expenses.find(e=>e.id===$("price-contract").value);if(!item)return;
+ const amount=Number($("price-amount").value),date=$("price-date").value;
+ if(!Number.isFinite(amount)||amount<=0||amount>1000000||!dateFromISO(date))return alert("Bitte gültige Preisangaben eingeben.");
+ const old=Number(item.amount);if(Math.abs(old-amount)<.005)return alert("Der neue Preis entspricht dem bisherigen Preis.");
+ if(!Array.isArray(priceHistory[item.id]))priceHistory[item.id]=[];
+ priceHistory[item.id].push({date,old,new:Math.round(amount*100)/100,note:$("price-note").value.trim()});
+ localStorage.setItem(V6_HISTORY_KEY,JSON.stringify(priceHistory));item.amount=Math.round(amount*100)/100;save();$("price-form").reset();$("price-date").value=isoDate(v6Today());showToast("Preisänderung gespeichert.");
+});
+// Komplettexport enthält alte Fixkostenliste plus optionale V6-Preisverläufe.
+// Import bleibt kompatibel mit älteren JSON-Listen.
+$("export-button").addEventListener("click",()=>{localStorage.setItem(V6_BACKUP_KEY,new Date().toISOString());renderBackup();});
+const v6Export=$("export-button");
+const v6Complete=document.createElement("button");v6Complete.type="button";v6Complete.className="text-button";v6Complete.textContent="Komplettsicherung V6 (mit Preisverlauf)";
+v6Export.after(v6Complete);
+v6Complete.addEventListener("click",()=>{
+ const payload={format:"FixkostenWaechter-V6",expenses,priceHistory};const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="fixkostenwaechter-v6-komplett.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);localStorage.setItem(V6_BACKUP_KEY,new Date().toISOString());renderBackup();showToast("Komplettsicherung erstellt.");
+});
+// V6-Import über separaten Knopf, um den bewährten V5-Listenimport unverändert zu lassen.
+const v6Import=document.createElement("button");v6Import.type="button";v6Import.className="text-button";v6Import.textContent="V6-Komplettsicherung importieren";v6Complete.after(v6Import);
+const v6Input=document.createElement("input");v6Input.type="file";v6Input.accept=".json,application/json";v6Input.hidden=true;v6Import.after(v6Input);
+v6Import.addEventListener("click",()=>v6Input.click());
+v6Input.addEventListener("change",async()=>{try{const f=v6Input.files?.[0];if(!f)return;if(f.size>5000000)throw Error("Datei zu groß.");const d=JSON.parse(await f.text());if(d.format!=="FixkostenWaechter-V6"||!Array.isArray(d.expenses)||d.expenses.length>10000||!d.expenses.every(validExpense)||new Set(d.expenses.map(x=>x.id)).size!==d.expenses.length||!d.priceHistory||typeof d.priceHistory!=="object"||Array.isArray(d.priceHistory))throw Error("Ungültige V6-Sicherung.");if(!confirm("Alle vorhandenen Fixkosten und Preisverläufe durch diese Sicherung ersetzen?"))return;expenses=d.expenses;priceHistory=d.priceHistory;localStorage.setItem(V6_HISTORY_KEY,JSON.stringify(priceHistory));selectedSavings.clear();save();showToast("Komplettsicherung importiert.");}catch(e){alert("Import fehlgeschlagen: "+e.message);}finally{v6Input.value="";}});
+renderV6();

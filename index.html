@@ -17,7 +17,7 @@
       <nav class="side-nav" aria-label="Bereiche"><button class="nav-link" type="button" data-target="uebersicht" aria-current="page"><span class="nav-icon" aria-hidden="true">⌂</span><span>Übersicht</span></button>
 <button class="nav-link" type="button" data-target="fixkosten" aria-current="false"><span class="nav-icon" aria-hidden="true">≡</span><span>Fixkosten</span></button>
 <button class="nav-link" type="button" data-target="sparanalyse" aria-current="false"><span class="nav-icon" aria-hidden="true">↗</span><span>Sparanalyse</span></button>
-<button class="nav-link" type="button" data-target="vertraege" aria-current="false"><span class="nav-icon" aria-hidden="true">▤</span><span>Verträge & Fristen</span></button>
+<button class="nav-link" type="button" data-target="assistent" aria-current="false"><span class="nav-icon">✧</span><span>Sparassistent</span></button><button class="nav-link" type="button" data-target="kalender" aria-current="false"><span class="nav-icon">▦</span><span>Zahlungskalender</span></button><button class="nav-link" type="button" data-target="preise" aria-current="false"><span class="nav-icon">↕</span><span>Preisentwicklung</span></button><button class="nav-link" type="button" data-target="vertraege" aria-current="false"><span class="nav-icon" aria-hidden="true">▤</span><span>Verträge & Fristen</span></button>
 <button class="nav-link" type="button" data-target="prognose" aria-current="false"><span class="nav-icon" aria-hidden="true">▥</span><span>Prognose & Bericht</span></button>
 <button class="nav-link" type="button" data-target="einstellungen" aria-current="false"><span class="nav-icon" aria-hidden="true">⚙</span><span>Daten & Einstellungen</span></button></nav>
       <p class="sidebar-note">Version 5 · Deine Daten bleiben auf diesem Gerät.</p>
@@ -79,7 +79,7 @@
 
 </div>
         <div class="app-view" id="view-sparanalyse" data-view="sparanalyse" hidden><div class="view-intro"><h2>Sparanalyse</h2><p>Erkenne Kostentreiber und simuliere Einsparungen.</p></div>    <section class="analysis-section" aria-labelledby="analysis-title">
-      <div class="section-heading"><div><p class="eyebrow">VERSION 4 · AUSWERTUNG</p><h2 id="analysis-title">Deine Kostenanalyse</h2></div></div>
+      <div class="section-heading"><div><p class="eyebrow">VERSION 6 · AUSWERTUNG</p><h2 id="analysis-title">Deine Kostenanalyse</h2></div></div>
       <div class="analysis-grid">
         <article class="analysis-panel"><h3>Auf einen Blick</h3><p id="analysis-overview" class="analysis-copy">Noch keine aktiven Fixkosten.</p><div id="top-expenses"></div></article>
         <article class="analysis-panel"><h3>Kosten nach Kategorien</h3><p class="analysis-copy">Monatliche Vergleichswerte aktiver Ausgaben</p><div id="category-chart" class="category-chart"></div></article>
@@ -94,8 +94,11 @@
 
 
 </div>
-        <div class="app-view" id="view-vertraege" data-view="vertraege" hidden><div class="view-intro"><h2>Verträge & Kündigungsfristen</h2><p>Wichtige Termine und Erinnerungen im Blick.</p></div>    <section class="analysis-section" aria-labelledby="contracts-title">
-      <div class="section-heading"><div><p class="eyebrow">VERSION 4 · VERTRÄGE</p><h2 id="contracts-title">Kündigungsfristen & Erinnerungen</h2></div></div>
+        <div class="app-view" id="view-assistent" data-view="assistent" hidden><div class="view-intro"><h2>Dein Sparassistent</h2><p>Regelbasierte Hinweise zu auffälligen Fixkosten. Keine automatische Kündigung und keine externen Daten.</p></div><div id="assistant-summary" class="analysis-panel"></div><div id="assistant-hints" class="v6-stack"></div></div>
+<div class="app-view" id="view-kalender" data-view="kalender" hidden><div class="view-intro"><h2>Zahlungskalender</h2><p>Voraussichtliche Zahlungstermine auf Grundlage des hinterlegten Zahlungsdatums und des Intervalls.</p></div><div class="analysis-panel"><div class="v6-toolbar"><label for="calendar-month">Monat auswählen <input type="month" id="calendar-month"></label><button type="button" class="button button-secondary" id="calendar-current">Aktueller Monat</button></div><p id="calendar-total" class="analysis-copy"></p><div id="calendar-days" class="v6-calendar"></div><div id="calendar-list" class="v6-stack"></div><p class="analysis-copy">Bei wöchentlichen Zahlungen wird alle 7 Tage gerechnet; monatliche Zahlungen am jeweiligen Kalendertag (am Monatsende angepasst). Die Anzeige ist eine Planung, kein Bankabgleich.</p></div></div>
+<div class="app-view" id="view-preise" data-view="preise" hidden><div class="view-intro"><h2>Preisentwicklung</h2><p>Dokumentiere Preisänderungen deiner Verträge und vergleiche alte und neue Beträge.</p></div><div class="analysis-panel"><label for="price-contract">Vertrag auswählen <select id="price-contract"></select></label><div id="price-history" class="v6-stack"></div><form id="price-form" class="v6-price-form"><div><label for="price-date">Gültig ab</label><input id="price-date" type="date" required></div><div><label for="price-amount">Neuer Betrag (€)</label><input id="price-amount" type="number" min="0.01" max="1000000" step="0.01" required></div><div><label for="price-note">Grund (optional)</label><input id="price-note" maxlength="100" placeholder="z. B. Preisanpassung"></div><button class="button button-primary" type="submit">Preisänderung speichern</button></form><p class="analysis-copy">Die Änderung aktualisiert den aktuellen Vertragspreis. Frühere Preise werden nur ab der ersten hier erfassten Änderung dokumentiert.</p></div></div>
+<div class="app-view" id="view-vertraege" data-view="vertraege" hidden><div class="view-intro"><h2>Verträge & Kündigungsfristen</h2><p>Wichtige Termine und Erinnerungen im Blick.</p></div>    <section class="analysis-section" aria-labelledby="contracts-title">
+      <div class="section-heading"><div><p class="eyebrow">VERSION 6 · VERTRÄGE</p><h2 id="contracts-title">Kündigungsfristen & Erinnerungen</h2></div></div>
       <article class="analysis-panel"><p class="analysis-copy">Die Fristen werden aus deinen Angaben berechnet. Hinweise erscheinen beim Öffnen der App – keine Push-Nachrichten im Hintergrund. Prüfe Fristen immer anhand deines Vertrags.</p>
         <div id="deadline-summary" class="deadline-summary" aria-live="polite"></div>
         <div id="deadline-list" class="deadline-list"></div>
@@ -104,7 +107,7 @@
 
 </div>
         <div class="app-view" id="view-prognose" data-view="prognose" hidden><div class="view-intro"><h2>Prognose & Bericht</h2><p>Deine Kosten für die kommenden zwölf Monate.</p></div>    <section class="analysis-section" aria-labelledby="dashboard-title">
-      <div class="section-heading"><div><p class="eyebrow">VERSION 4 · DASHBOARD</p><h2 id="dashboard-title">Verträge & 12-Monats-Prognose</h2></div></div>
+      <div class="section-heading"><div><p class="eyebrow">VERSION 6 · DASHBOARD</p><h2 id="dashboard-title">Verträge & 12-Monats-Prognose</h2></div></div>
       <div class="dashboard-grid">
         <article class="analysis-panel"><h3>Vertrags-Dashboard</h3><div id="contract-dashboard" class="dashboard-stats"></div><p class="analysis-copy">Es werden nur aktive Verträge mit gültigem Enddatum für Fristen berücksichtigt.</p></article>
         <article class="analysis-panel"><h3>Prognose für die nächsten 12 Monate</h3><p class="analysis-copy">Monatliche Durchschnittswerte auf Basis der aktuell aktiven Ausgaben. Keine Vorhersage konkreter Abbuchungstage, Preisanpassungen oder Vertragsverlängerungen.</p><div id="forecast-total" class="forecast-total"></div><div id="forecast-chart" class="forecast-chart"></div></article>
@@ -115,7 +118,7 @@
 </div>
         <div class="app-view" id="view-einstellungen" data-view="einstellungen" hidden><div class="view-intro"><h2>Daten & Einstellungen</h2><p>Datensicherung und lokale Datenverwaltung.</p></div><div class="analysis-panel">    <footer>
       <p>Deine Daten werden lokal in diesem Browser gespeichert. Auch Version 4 verbindet sich nicht mit deiner Bank.</p>
-      <button id="export-button" class="text-button" type="button">Daten exportieren</button>
+      <p id="backup-status" class="analysis-copy"></p><button id="export-button" class="text-button" type="button">Daten exportieren</button>
       <button id="import-button" class="text-button" type="button">Daten importieren</button>
       <input id="import-file" type="file" accept="application/json,.json" hidden>
       <button id="reset-button" class="text-button danger" type="button">Alle Daten löschen</button>

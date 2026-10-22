@@ -1,18 +1,23 @@
-# FixkostenWächter Version 5 – neue Navigation
+# FixkostenWächter V6
+
+Kostenlose deutschsprachige Offline-PWA mit linker Navigation.
 
 ## Neu
-Die App hat jetzt ein links angeordnetes Seitenmenü (auf dem iPhone über ☰ erreichbar). Die Startseite zeigt nur Monats-/Jahreskosten, Vertragsstatus und einen kurzen Spar-Check. Weitere Bereiche: Fixkosten, Sparanalyse, Verträge & Fristen, Prognose & Bericht sowie Daten & Einstellungen. Die bisherigen Funktionen aus Version 4 sind erhalten.
+- Regelbasierter Sparassistent (hohe Kostenanteile, gleiche Vertragsnamen, nahe Kündigungsfristen). Keine externen Preise oder KI.
+- Zahlungskalender nach gespeicherten Zahlungsterminen und Intervallen. Planung, keine tatsächlichen Bankabbuchungen.
+- Preisentwicklung: manuell eingegebene Änderungen mit Verlauf; aktuelle Fixkosten werden angepasst.
+- Datensicherung: V6-Komplettsicherung enthält Fixkosten und Preisverläufe; V5-Listenexport bleibt erhalten. Hinweis auf letzten gestarteten Export.
 
-## Windows
-1. ZIP entpacken und Ordner `FixkostenWaechter_V5` öffnen.
-2. PowerShell im Ordner starten: `py -m http.server 8000` (Python 3 erforderlich).
-3. `http://localhost:8000` im Browser öffnen.
+## Installation Windows
+1. ZIP entpacken. Im Ordner `FixkostenWaechter_V6` ein Terminal öffnen.
+2. `py -m http.server 8000` ausführen (Python 3 erforderlich).
+3. `http://localhost:8000` öffnen.
 
-## iPhone / Update von Version 4
-1. **Vor dem Update** in Version 4 unter „Daten exportieren“ eine JSON-Sicherung erstellen.
-2. Die Dateien aus Version 5 am **gleichen Veröffentlichungsort** wie Version 4 ersetzen (z. B. bestehendes GitHub-Pages-Repository).
-3. Safari öffnen und die Seite neu laden, gegebenenfalls die installierte Web-App neu starten. Über ☰ wird das linke Menü eingeblendet.
-4. Bei gleicher Origin und gleichem Browser bleibt `localStorage` mit Schlüssel `fixkostenwaechter.v1` erhalten. Bei einer neuen Webadresse oder einem anderen Gerät über „Daten & Einstellungen“ → „Daten importieren“ die Sicherung einspielen.
+## iPhone
+Die Dateien auf einem kostenlosen HTTPS-Host wie GitHub Pages veröffentlichen. In Safari öffnen und über Teilen > Zum Home-Bildschirm hinzufügen. GitHub-Pages-Repositories können öffentlich einsehbar sein; keine privaten Finanzdaten in den Quellcode schreiben.
 
-## Datenschutz und Kosten
-Keine Datenbank, kein Konto, keine kostenpflichtige API. Fixkosten bleiben lokal im Browser; keine automatische Synchronisierung. GitHub Pages kann für öffentliche Repositories kostenlos verwendet werden. Erinnerungen erscheinen in der App, nicht als Hintergrund-Push. Die 12-Monats-Prognose ist eine Hochrechnung. Der PDF-Bericht wird über den Druckdialog des Browsers erstellt.
+## Update / Datensicherheit
+Vor dem Update V5-Daten als JSON exportieren. Dateien auf demselben Ursprung ersetzen. Der lokale Speicherschlüssel `fixkostenwaechter.v1` bleibt unverändert. Nach einem Gerätewechsel Daten importieren. Für Preisverläufe ab V6 stets **Komplettsicherung V6** verwenden; der alte Listenexport enthält keine Preisverläufe. Alte JSON-Listen lassen sich weiterhin über `Daten importieren` einlesen.
+
+## Hinweise
+Keine Server-, API- oder Abokosten. Keine Konten, keine Cloud-Synchronisierung. Lokale Browserdaten können durch Browserbereinigung verloren gehen. Zahlungskalender und Sparhinweise sind Schätzungen und keine Finanzberatung. Erinnerungen erscheinen beim Öffnen der App; keine Hintergrund-Pushmeldungen.
